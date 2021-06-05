@@ -1,0 +1,29 @@
+{
+    "name": "web-wallet-nodejs-implementation",
+    "version": "1.0.0",
+    "description": "Nodejs implementation of pure js web wallet",
+    "main": "Examples.js",
+    "dependencies": {
+      "big-integer": "^1.6.48",
+      "get-random-values": "^1.2.2",
+      "secp256k1": "^4.0.2"
+    },
+    "devDependencies": {},
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/JSKitty/scc-js.git"
+    },
+    "keywords": [
+      "nodejs",
+      "webwallet"
+    ],
+    "author": "Luke Larsen",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/JSKitty/scc-js/issues"
+    },
+    "homepage": "https://github.com/JSKitty/scc-js#readme"
+  }
