@@ -3,9 +3,10 @@ const Crypto = require('crypto');
 const secp256k1 = require('secp256k1');
 let getRandomValues = require('get-random-values');
 var util = require('./util.js');
+var bitjs = require('./bitTrx');
 
 // Pubkey Derivation
-pubFromPriv = async function (privkey, rawBytes = false) {
+pubFromPriv = function (privkey, rawBytes = false) {
 	let bArrConvert = rawBytes ? privkey : util.from_b58(privkey);
 	let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
 	let key = droplfour.slice(1, droplfour.length);
@@ -53,6 +54,6 @@ generateWallet = async function (strPrefix = false) {
 	return ret;
 }
 
-
+exports.tx             = bitjs;
 exports.generateWallet = generateWallet;
 exports.pubFromPriv    = pubFromPriv;
