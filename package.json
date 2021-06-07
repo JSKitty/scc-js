@@ -1,29 +1,29 @@
 {
-    "name": "scc-js",
-    "version": "1.0.0",
-    "description": "Pure Node.js implementation for SCC",
-    "main": "",
-    "dependencies": {
-      "big-integer": "^1.6.48",
-      "get-random-values": "^1.2.2",
-      "secp256k1": "^4.0.2"
-    },
-    "devDependencies": {},
-    "scripts": {
-      "test": "node tests.js"
-    },
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/JSKitty/scc-js.git"
-    },
-    "keywords": [
-      "nodejs",
-      "webwallet"
-    ],
-    "author": "Luke Larsen, JSKitty",
-    "license": "MIT",
-    "bugs": {
-      "url": "https://github.com/JSKitty/scc-js/issues"
-    },
-    "homepage": "https://github.com/JSKitty/scc-js#readme"
-  }
+  "name": "scc-js",
+  "version": "1.0.0",
+  "description": "Pure Node.js implementation for SCC",
+  "main": "index.js",
+  "dependencies": {
+    "big-integer": "^1.6.48",
+    "get-random-values": "^1.2.2",
+    "secp256k1": "^4.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JSKitty/scc-js.git"
+  },
+  "keywords": [
+    "nodejs",
+    "webwallet"
+  ],
+  "author": "Luke Larsen, JSKitty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JSKitty/scc-js/issues"
+  },
+  "homepage": "https://github.com/JSKitty/scc-js#readme"
+}
