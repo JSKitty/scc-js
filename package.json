@@ -1,6 +1,6 @@
 {
   "name": "scc-js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Pure Node.js implementation for SCC",
   "main": "index.js",
   "dependencies": {
