@@ -18,6 +18,10 @@ cTx.addoutput(pub, 0.004);
 // send: 0.005
 // change: 0.004
 // fee: 0.001
-console.log(cTx.sign(priv, 1));
+let nStartTime = Date.now();
+cTx.sign(priv, 1).then(signedTx => {
+    console.log(signedTx);
+    console.log("Time taken to sign: " + (Date.now() - nStartTime) + " ms");
+});
 // This is logging a pretty small serialized transaction, which cannot be decoded by the Core wallet.
 // So something is probably wrong during the signing process!

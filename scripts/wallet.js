@@ -1,6 +1,6 @@
 /* Modules */
 const Crypto = require('crypto');
-const secp256k1 = require('secp256k1');
+let nsecp256k1 = require('noble-secp256k1');
 let getRandomValues = require('get-random-values');
 var util = require('./util.js');
 var bitjs = require('./bitTrx');
@@ -11,7 +11,7 @@ pubFromPriv = function (privkey, rawBytes = false) {
 	let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
 	let key = droplfour.slice(1, droplfour.length);
 	let privkeyBytes = key.slice(0, key.length - 1);
-	const pubkeyExt = secp256k1.publicKeyCreate(privkeyBytes);
+	const pubkeyExt = nsecp256k1.getPublicKey(privkeyBytes);
 	let pubHash = Crypto.createHash("sha256").update(pubkeyExt).digest('hex');
 	let pubHashRMD160 = Crypto.createHash("ripemd160").update(util.hexStringToByte(pubHash)).digest('hex');
 	let pubHashNetwork = util.PUBKEY_ADDRESS.toString(16) + pubHashRMD160;

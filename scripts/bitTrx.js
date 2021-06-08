@@ -1,7 +1,7 @@
 // Node modules
 const Crypto = require('crypto');
 var BigInteger = require("big-integer");
-const secp256k1 = require('secp256k1');
+let nsecp256k1 = require('noble-secp256k1');
 
 // In-house libs
 var util = require('./util.js');
@@ -105,7 +105,7 @@ exports.transaction = function() {
 		}
 	}
 	/* generate a signature from a transaction hash */
-	btrx.transactionSig = function(index, wif, sigHashType, txhash){
+	btrx.transactionSig = async function(index, wif, sigHashType, txhash){
 		var shType = sigHashType || 1;
 		var hash = txhash || util.hexStringToByte(this.transactionHash(index, shType));
 		if (hash) {
@@ -113,17 +113,17 @@ exports.transaction = function() {
 			let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
 			let key = droplfour.slice(1, droplfour.length);
 			let privkeyBytes = key.slice(0, key.length - 1);
-			const sig = secp256k1.ecdsaSign(hash, privkeyBytes);
+			const sig = await nsecp256k1.sign(hash, privkeyBytes);
 			return util.byteToHexString(sig.signature);
 		} else {
 			return false;
 		}
 	}
 	/* sign a "standard" input */
-	btrx.signinput = function(index, wif, sigHashType) {
+	btrx.signinput = async function(index, wif, sigHashType) {
 		let pubKey = wallet.pubFromPriv(wif);
 		var shType = sigHashType || 1;
-		var signature = this.transactionSig(index, wif, shType);
+		var signature = await this.transactionSig(index, wif, shType);
 		var buf = [];
 		var sigBytes = util.hexStringToByte(signature);
 		buf.push(sigBytes.length);
@@ -135,10 +135,10 @@ exports.transaction = function() {
 		return true;
 	}
 	/* sign inputs */
-	btrx.sign = function(wif, sigHashType) {
+	btrx.sign = async function(wif, sigHashType) {
 		var shType = sigHashType || 1;
 		for (var i = 0; i < this.inputs.length; i++) {
-			this.signinput(i, wif, shType);
+			await this.signinput(i, wif, shType);
 		}
 		return this.serialize();
 	}
