@@ -25,7 +25,7 @@ exports.transaction = function() {
 		var o = {};
 		o.outpoint = {'hash': txid, 'index': index};
 		//o.script = []; Signature and Public Key should be added after singning
-		o.script = util.hexStringToByte(script); //push previous output pubkey script
+		o.script = Buffer.from(script); //push previous output pubkey script
 		o.sequence = sequence || ((btrx.locktime == 0) ? 4294967295 : 0);
 		return this.inputs.push(o);
 	}
@@ -33,14 +33,15 @@ exports.transaction = function() {
 		var o = {};
 		var buf = [];
 		var addrDecoded = util.from_b58(address);
+		var pubkeyDecoded = addrDecoded.slice(0, addrDecoded.length - 4).slice(1);
 		o.value = new BigInteger('' + Math.round((value * 1) * 1e8), 10);
-		buf.push(scripts.OP.OP_DUP);         // OP_DUP
-		buf.push(scripts.OP.OP_HASH160);     // OP_HASH160
-		buf.push(addrDecoded.length);
-		buf = buf.concat(addrDecoded);       // address in bytes
-		buf.push(scripts.OP.OP_EQUALVERIFY); // OP_EQUALVERIFY
-		buf.push(scripts.OP.OP_CHECKSIG);    // OP_CHECKSIG
-		o.script =   buf;
+		buf.push(Buffer.from(bitjs.numToVarInt(scripts.OP.OP_DUP)));         // OP_DUP
+		buf.push(Buffer.from(bitjs.numToVarInt(scripts.OP.OP_HASH160)));     // OP_HASH160
+		buf.push(Buffer.from(bitjs.numToVarInt(pubkeyDecoded.length)));
+		buf = buf.concat(Buffer.from(pubkeyDecoded));       // address in bytes
+		buf.push(Buffer.from(bitjs.numToVarInt(scripts.OP.OP_EQUALVERIFY))); // OP_EQUALVERIFY
+		buf.push(Buffer.from(bitjs.numToVarInt(scripts.OP.OP_CHECKSIG)));    // OP_CHECKSIG
+		o.script =   Buffer.concat(buf);
 		return this.outputs.push(o);
 	}
 	/* generate the transaction hash to sign from a transaction input */
@@ -95,8 +96,10 @@ exports.transaction = function() {
 					}
 				}
 			}
-			var buffer = util.hexStringToByte(clone.serialize());
-			buffer = buffer + "," + (bitjs.numToBytes(parseInt(shType), 4))
+			var bufArr = [];
+			bufArr.push(Buffer.from(util.hexStringToByte(clone.serialize())));
+			bufArr.push(Buffer.from("," + (bitjs.numToBytes(parseInt(shType), 4))));
+			var buffer = Buffer.concat(bufArr);
 			var hash = Crypto.createHash("sha256").update(buffer).digest('bytes');
 			var r = util.byteToHexString(Crypto.createHash("sha256").update(hash).digest('bytes'));
 			return r;
@@ -113,24 +116,40 @@ exports.transaction = function() {
 			let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
 			let key = droplfour.slice(1, droplfour.length);
 			let privkeyBytes = key.slice(0, key.length - 1);
-			const sig = await nsecp256k1.sign(hash, privkeyBytes);
-			return util.byteToHexString(sig.signature);
+			const sig = await nsecp256k1.sign(hash, privkeyBytes, { canonical: true, recovered: true });
+			let bufArr = [];
+			bufArr.push(Buffer.from(bitjs.numToVarInt(0x02)));
+			bufArr.push(Buffer.from(bitjs.numToVarInt(sig[1])));
+			bufArr.push(Buffer.from([sig[1]]));
+
+			bufArr.push(Buffer.from(bitjs.numToVarInt(0x02)));
+			bufArr.push(Buffer.from(bitjs.numToVarInt([sig[0].length])));
+			bufArr.push(Buffer.from(sig[0]));
+
+			bufArr.unshift(Buffer.from(bitjs.numToVarInt(bufArr.length)));
+			bufArr.unshift(Buffer.from(bitjs.numToVarInt(0x30)));
+
+			bufArr.push(Buffer.from(bitjs.numToVarInt(parseInt(shType, 10))));
+			console.log("Sig: ([0] is signature, [1] is recovery bit)");
+			console.log(sig);
+			console.log("\n")
+			return util.byteToHexString(Buffer.concat(bufArr));
 		} else {
 			return false;
 		}
 	}
 	/* sign a "standard" input */
 	btrx.signinput = async function(index, wif, sigHashType) {
-		let pubKey = wallet.pubFromPriv(wif);
+		let pubKey = wallet.pubFromPriv(wif, false, true);
 		var shType = sigHashType || 1;
 		var signature = await this.transactionSig(index, wif, shType);
 		var buf = [];
 		var sigBytes = util.hexStringToByte(signature);
-		buf.push(sigBytes.length);
-		buf = buf.concat(sigBytes);
-        var pubKeyBytes = util.hexStringToByte(pubKey);
-		buf.push(pubKeyBytes.length);
-		buf = buf.concat(pubKeyBytes);
+		buf.push(Buffer.from(bitjs.numToVarInt(sigBytes.length)));
+		buf.push(Buffer.from(sigBytes));
+		buf.push(Buffer.from(bitjs.numToVarInt(pubKey.length)));
+		buf.push(Buffer.from(pubKey));
+		buf = Buffer.concat(buf);
 		this.inputs[index].script = buf;
 		return true;
 	}
@@ -144,27 +163,28 @@ exports.transaction = function() {
 	}
 	/* serialize a transaction */
 	btrx.serialize = function() {
-		var buffer = [];
-		buffer = buffer.concat(bitjs.numToBytes(parseInt(this.version), 4));
-		buffer = buffer.concat(bitjs.numToVarInt(this.inputs.length));
+		let bufArr = [];
+		bufArr.push(Buffer.from(bitjs.numToBytes(parseInt(this.version), 4)));
+		bufArr.push(Buffer.from(bitjs.numToVarInt(this.inputs.length)));
 		for (var i = 0; i < this.inputs.length; i++) {
 			var txin = this.inputs[i];
-			buffer = buffer.concat(util.hexStringToByte(txin.outpoint.hash).reverse());
-			buffer = buffer.concat(bitjs.numToBytes(parseInt(txin.outpoint.index), 4));
+			bufArr.push(Buffer.from(util.hexStringToByte(txin.outpoint.hash).reverse()));
+			bufArr.push(Buffer.from(bitjs.numToBytes(parseInt(txin.outpoint.index), 4)));
 			var scriptBytes = txin.script;
-			buffer = buffer.concat(bitjs.numToVarInt(scriptBytes.length));
-			buffer = buffer.concat(scriptBytes);
-			buffer = buffer.concat(bitjs.numToBytes(parseInt(txin.sequence), 4));
+			bufArr.push(Buffer.from(bitjs.numToVarInt(scriptBytes.length)));
+			bufArr.push(Buffer.from(scriptBytes));
+			bufArr.push(Buffer.from(bitjs.numToBytes(parseInt(txin.sequence), 4)));
 		}
-		buffer = buffer.concat(bitjs.numToVarInt(this.outputs.length));
+		bufArr.push(Buffer.from(bitjs.numToVarInt(this.outputs.length)));
 		for (var i = 0; i < this.outputs.length; i++) {
 			var txout = this.outputs[i];
-			buffer = buffer.concat(bitjs.numToBytes(txout.value, 8));
+			bufArr.push(Buffer.from(bitjs.numToBytes(txout.value, 8)));
 			var scriptBytes = txout.script;
-			buffer = buffer.concat(bitjs.numToVarInt(scriptBytes.length));
-			buffer = buffer.concat(scriptBytes);
+			bufArr.push(Buffer.from(bitjs.numToVarInt(scriptBytes.length)));
+			bufArr.push(Buffer.from(scriptBytes));
 		}
-		buffer = buffer.concat(bitjs.numToBytes(parseInt(this.locktime), 4));
+		bufArr.push(Buffer.from(bitjs.numToBytes(parseInt(this.locktime), 4)));
+		var buffer = Buffer.concat(bufArr);
 		return util.byteToHexString(buffer);
 	}
 	return btrx;
@@ -203,7 +223,7 @@ bitjs.bytesToNum = function(bytes) {
 }
 /* clone an object */
 bitjs.clone = function(obj) {
-	if(obj == null || typeof(obj) != 'object') return obj;
+	if(obj == null || typeof(obj) != 'object' || Buffer.isBuffer(obj)) return obj;
 	var temp = new obj.constructor();
 	for(var key in obj) {
 		if(obj.hasOwnProperty(key)) {

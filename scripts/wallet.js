@@ -6,12 +6,13 @@ var util = require('./util.js');
 var bitjs = require('./bitTrx');
 
 // Pubkey Derivation
-pubFromPriv = function (privkey, rawBytes = false) {
+pubFromPriv = function (privkey, rawBytes = false, pubBytesOnly = false) {
 	let bArrConvert = rawBytes ? privkey : util.from_b58(privkey);
 	let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
 	let key = droplfour.slice(1, droplfour.length);
 	let privkeyBytes = key.slice(0, key.length - 1);
 	const pubkeyExt = nsecp256k1.getPublicKey(privkeyBytes, true);
+	if (pubBytesOnly) return pubkeyExt;
 	let pubHash = Crypto.createHash("sha256").update(pubkeyExt).digest('hex');
 	let pubHashRMD160 = Crypto.createHash("ripemd160").update(util.hexStringToByte(pubHash)).digest('hex');
 	let pubHashNetwork = util.PUBKEY_ADDRESS.toString(16) + pubHashRMD160;

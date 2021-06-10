@@ -20,6 +20,7 @@ cTx.addoutput(pub, 0.004);
 // fee: 0.001
 let nStartTime = Date.now();
 cTx.sign(priv, 1).then(signedTx => {
+    console.log("Signed Raw TX:");
     console.log(signedTx);
     console.log("Time taken to sign: " + (Date.now() - nStartTime) + " ms");
 });
