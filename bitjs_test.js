@@ -21,7 +21,7 @@ cTx.addoutput(pub, 0.004);
 let nStartTime = Date.now();
 cTx.sign(priv, 1).then(signedTx => {
     console.log("Signed Raw TX:");
-    console.log(signedTx);
+    console.log(signedTx.toLowerCase());
     console.log("Time taken to sign: " + (Date.now() - nStartTime) + " ms");
 });
 // This is logging a pretty small serialized transaction, which cannot be decoded by the Core wallet.
