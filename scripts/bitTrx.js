@@ -46,7 +46,7 @@ exports.transaction = function() {
 	btrx.addoutputburn = function(value, data) {
 		var o = {};
 		o.value = new BigInteger('' + Math.round((value * 1) * 1e8), 10);
-		o.script = getScriptForBurn(data);
+		o.script = scripts.getScriptForBurn(data);
 		return this.outputs.push(o);
 	}
 	/* generate the transaction hash to sign from a transaction input */
