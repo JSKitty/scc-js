@@ -51,11 +51,14 @@ exports.transaction = function() {
 	}
 	/* generate the transaction hash to sign from a transaction input */
 	btrx.transactionHash = function(index, sigHashType) {
-		var clone = bitjs.clone(this);
+		// Perform a 'deep clone' by stringifying and re-parsing to obliterate all pointers, then re-assign functions as-needed
+		// (I hate that this works)
+		var clone = JSON.parse(JSON.stringify(this));
+		clone.serialize = this.serialize;
 		var shType = sigHashType || 1;
 		/* black out all other ins, except this one */
 		for (var i = 0; i < clone.inputs.length; i++) {
-			if(index!=i){
+			if (index != i) {
 				clone.inputs[i].script = [];
 			}
 		}
@@ -209,20 +212,5 @@ bitjs.numToVarInt = function(num) {
 bitjs.bytesToNum = function(bytes) {
 	if (bytes.length == 0) return 0;
 	else return bytes[0] + 256 * bitjs.bytesToNum(bytes.slice(1));
-}
-bitjs.clone = function (x)
-{
-    if (x === null || x === undefined)
-        return x;
-    if (typeof x.clone === "function")
-        return x.clone();
-    if (x.constructor == Array)
-    {
-        var r = [];
-        for (var i=0,n=x.length; i<n; i++)
-            r.push(clone(x[i]));
-        return r;
-    }
-    return x;
 }
 return bitjs;
