@@ -23,6 +23,8 @@ function hexStringToByte(str) {
 	return new Uint8Array(a);
 }
 
+
+
 // B58 Encoding Map
 var MAP = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
@@ -82,6 +84,14 @@ var from_b58 = function (
 	return new Uint8Array(b)  // return the final byte array in Uint8Array format
 }
 
+function wifToBytes(privateKey){
+	let bArrConvert = from_b58(privateKey);
+	let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
+	let key = droplfour.slice(1, droplfour.length);
+	byteKey = key.slice(0, key.length - 1);
+	return byteKey;
+}
+
 // Constants
 exports.PUBKEY_ADDRESS = PUBKEY_ADDRESS;
 exports.SCRIPT_ADDRESS = SCRIPT_ADDRESS;
@@ -89,5 +99,6 @@ exports.SECRET_KEY     = SECRET_KEY;
 // Functions
 exports.byteToHexString = byteToHexString;
 exports.hexStringToByte = hexStringToByte;
+exports.wifToBytes 		= wifToBytes
 exports.to_b58          = to_b58;
 exports.from_b58        = from_b58;

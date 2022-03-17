@@ -1,7 +1,7 @@
 // Node modules
 const Crypto = require('crypto');
 var BigInteger = require("big-integer");
-let nsecp256k1 = require('noble-secp256k1');
+let nsecp256k1 = require('@noble/secp256k1');
 
 // In-house libs
 var util = require('./util.js');
