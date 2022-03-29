@@ -5,8 +5,7 @@
     "main": "index.js",
     "dependencies": {
         "@noble/secp256k1": "^1.5.5",
-        "big-integer": "^1.6.48",
-        "get-random-values": "^1.2.2"
+        "big-integer": "^1.6.48"
     },
     "scripts": {
         "test": "node tests.js"

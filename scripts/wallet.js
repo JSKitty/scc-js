@@ -1,7 +1,6 @@
 /* Modules */
 const Crypto = require('crypto');
 const nsecp256k1 = require('@noble/secp256k1');
-const getRandomValues = require('get-random-values');
 var util = require('./util.js');
 var bitjs = require('./bitTrx');
 
@@ -29,33 +28,26 @@ pubFromPriv = function (privkey, rawBytes = false, pubBytesOnly = false) {
 }
 
 // Wallet Generation
-generateWallet = async function (strPrefix = false) {
+generateWallet = async function () {
 	// Private Key Generation
-	let randBytes = getRandomValues(new Uint8Array(32));
-	let privHex = util.byteToHexString(randBytes).toUpperCase();
-	let privWithVersion = util.SECRET_KEY.toString(16) + privHex + "01";
-	let privHash1 = Crypto.createHash("sha256").update(util.hexStringToByte(privWithVersion)).digest('hex');
-	let privHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(privHash1)).digest('hex').toUpperCase();
-	let chcksum = String(privHash2).substr(0, 8).toUpperCase();
-	let keyWithChcksum = privWithVersion + chcksum;
-	let privkeyBytes = util.hexStringToByte(keyWithChcksum);
-	let privkeyWIF = util.to_b58(privkeyBytes);
-	// Derive the public key
-	let pubKey = await pubFromPriv(privkeyBytes, true);
-	//console.log("Public Key:     " + pubKey);
+	const randBytes = Crypto.randomBytes(32);
+	const privHex = util.byteToHexString(randBytes).toUpperCase();
+	const privWithVersion = util.SECRET_KEY.toString(16) + privHex + "01";
+	const privHash1 = Crypto.createHash("sha256").update(util.hexStringToByte(privWithVersion)).digest('hex');
+	const privHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(privHash1)).digest('hex').toUpperCase();
+	const chcksum = String(privHash2).substr(0, 8).toUpperCase();
+	const keyWithChcksum = privWithVersion + chcksum;
+	const privkeyBytes = util.hexStringToByte(keyWithChcksum);
+	const privkeyWIF = util.to_b58(privkeyBytes);
 
-	// TODO: If vanity search (strPrefix) is supplied, we need to loop until we get the correct key set
-	let ret = {
-		pubkey: null,
-		privkey: null,
-		vanity_match: false
-	}
-	if (strPrefix === false || (strPrefix !== false && pubKey.toLowerCase().startsWith(strPrefix))) {
-		ret.pubkey = pubKey;
-		ret.privkey = privkeyWIF;
-		ret.vanity_match = true;
-	}
-	return ret;
+	// Derive the public key
+	const pubKey = await pubFromPriv(privkeyBytes, true);
+
+	// Return wallet object
+	return {
+		'pubkey': pubKey,
+		'privkey': privkeyWIF
+	};
 }
 
 exports.tx                = bitjs;
