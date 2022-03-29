@@ -1,6 +1,6 @@
 /* Modules */
 const Crypto = require('crypto');
-let nsecp256k1 = require('noble-secp256k1');
+let nsecp256k1 = require('@noble/secp256k1');
 let getRandomValues = require('get-random-values');
 var util = require('./util.js');
 var bitjs = require('./bitTrx');
