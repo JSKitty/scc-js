@@ -1,7 +1,8 @@
 const secp256k1 = require('@noble/secp256k1')
 const Crypto = require('crypto');
 const varuint = require('./varuint')
-var util = require('./util.js');
+const wallet = require('./wallet');
+const util = require('./util');
 
 
 function sha256 (b) {
@@ -34,7 +35,7 @@ function decodeSignature (buffer) {
 }
 
 function magicHash (message, messagePrefix) {
-  messagePrefix = messagePrefix || '\u0018Bitcoin Signed Message:\n'
+  messagePrefix = messagePrefix || '\x19DarkCoin Signed Message:\n'
   if (!Buffer.isBuffer(messagePrefix)) {
     messagePrefix = Buffer.from(messagePrefix, 'utf8')
   }
@@ -96,15 +97,14 @@ function verify (message, address, signature, messagePrefix) {
   const parsed = decodeSignature(signature)
 
   const hash = magicHash(message, messagePrefix)
-  const publicKey = secp256k1.recover(
+  const publicKey = secp256k1.recoverPublicKey(
     hash,
     parsed.signature,
     parsed.recovery,
     parsed.compressed
-  )
-  let actual, expected
+  );
 
-  return actual.equals(expected)
+  return address === wallet.netPubFromSecpPub(publicKey);
 }
 
 module.exports = {

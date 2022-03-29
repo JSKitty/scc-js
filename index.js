@@ -1,2 +1,4 @@
-let wallet = require('./scripts/wallet.js');
-module.exports = wallet;
+module.exports = {
+    wallet: require('./scripts/wallet.js'),
+    signer: require('./scripts/sign.js')
+};

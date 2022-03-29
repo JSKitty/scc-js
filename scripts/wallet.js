@@ -1,28 +1,31 @@
 /* Modules */
 const Crypto = require('crypto');
-let nsecp256k1 = require('@noble/secp256k1');
-let getRandomValues = require('get-random-values');
+const nsecp256k1 = require('@noble/secp256k1');
+const getRandomValues = require('get-random-values');
 var util = require('./util.js');
 var bitjs = require('./bitTrx');
 
+netPubFromSecpPub = function (secpPubkey) {
+	const pubHash = Crypto.createHash("sha256").update(secpPubkey).digest('hex');
+	const pubHashRMD160 = Crypto.createHash("ripemd160").update(util.hexStringToByte(pubHash)).digest('hex');
+	const pubHashNetwork = util.PUBKEY_ADDRESS.toString(16) + pubHashRMD160;
+	const pubHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHashNetwork)).digest('hex');
+	const pubHash3 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHash2)).digest('hex').toUpperCase();
+	const chcksumPub = String(pubHash3).substr(0, 8).toUpperCase();
+	const pubPreBase = pubHashNetwork + chcksumPub;
+	// Return the Network-Encoded pubkey (SCC address)
+	return util.to_b58(util.hexStringToByte(pubPreBase));
+}
+
 // Pubkey Derivation
 pubFromPriv = function (privkey, rawBytes = false, pubBytesOnly = false) {
-	let bArrConvert = rawBytes ? privkey : util.from_b58(privkey);
-	let droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
-	let key = droplfour.slice(1, droplfour.length);
-	let privkeyBytes = key.slice(0, key.length - 1);
+	const bArrConvert = rawBytes ? privkey : util.from_b58(privkey);
+	const droplfour = bArrConvert.slice(0, bArrConvert.length - 4);
+	const key = droplfour.slice(1, droplfour.length);
+	const privkeyBytes = key.slice(0, key.length - 1);
 	const pubkeyExt = nsecp256k1.getPublicKey(privkeyBytes, true);
 	if (pubBytesOnly) return pubkeyExt;
-	let pubHash = Crypto.createHash("sha256").update(pubkeyExt).digest('hex');
-	let pubHashRMD160 = Crypto.createHash("ripemd160").update(util.hexStringToByte(pubHash)).digest('hex');
-	let pubHashNetwork = util.PUBKEY_ADDRESS.toString(16) + pubHashRMD160;
-	let pubHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHashNetwork)).digest('hex');
-	let pubHash3 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHash2)).digest('hex').toUpperCase();
-	let chcksumPub = String(pubHash3).substr(0, 8).toUpperCase();
-	let pubPreBase = pubHashNetwork + chcksumPub;
-	let pubKey = util.to_b58(util.hexStringToByte(pubPreBase));
-	//console.log("Type: " + (rawBytes ? "raw" : "wif") + ", Pub: " + pubKey);
-	return pubKey;
+	return netPubFromSecpPub(pubkeyExt);
 }
 
 // Wallet Generation
@@ -55,6 +58,7 @@ generateWallet = async function (strPrefix = false) {
 	return ret;
 }
 
-exports.tx             = bitjs;
-exports.generateWallet = generateWallet;
-exports.pubFromPriv    = pubFromPriv;
+exports.tx                = bitjs;
+exports.generateWallet    = generateWallet;
+exports.pubFromPriv       = pubFromPriv;
+exports.netPubFromSecpPub = netPubFromSecpPub;
