@@ -26,7 +26,7 @@ async function tests() {
     console.log('Test 3 --- Create a signature using our test wallet');
 
     nStartTime = Date.now();
-    const cSig = await SCC.signer.sign('test', cWallet.privkey, true, {extraEntropy: true});
+    const cSig = await SCC.signer.sign('test', cWallet.privkey);
     console.log('Sig:  ' + cSig.toString('base64'));
     console.log('Test 3 --- End (took ' + (Date.now() - nStartTime) + ' ms)\n\n');
 

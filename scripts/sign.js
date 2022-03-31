@@ -14,7 +14,7 @@ function hash256 (buffer) {
   return sha256(sha256(buffer))
 }
 
-function encodeSignature (signature, recovery, compressed, ) {
+function encodeSignature (signature, recovery, compressed) {
     if (compressed) recovery += 4
     return Buffer.concat([Buffer.alloc(1, recovery + 27), signature])
 }
@@ -60,7 +60,7 @@ function prepareSign (
     sigOptions = messagePrefixArg
     messagePrefixArg = undefined
   }
-  let {extraEntropy } = sigOptions || {}
+  let {extraEntropy } = sigOptions || {extraEntropy: true}
   return {
     messagePrefixArg,
     extraEntropy
@@ -81,7 +81,10 @@ function sign (
   const hash = magicHash(message, messagePrefixArg)
 
   const privateKeyBytes = util.wifToBytes(privateKey)
+  // Default 'compressed' to true
+  if (compressed === undefined) compressed = true;
 
+  // extraEntropy will also default to 'true' if left unset
   return secp256k1.sign(hash, privateKeyBytes, {recovered:true, der:false, extraEntropy:extraEntropy}).then(function(result){
     return encodeSignature(
         result[0],

@@ -71,7 +71,7 @@ const SCC = require('scc-js');
 
 // Async
 async function signMessage(msg, privkey)) {
-    return await SCC.signer.sign(msg, privkey, true, {extraEntropy: true}); // Buffer([signature bytes]);
+    return await SCC.signer.sign(msg, privkey); // Buffer([signature bytes]);
 }
 
 // Callback
