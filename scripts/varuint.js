@@ -1,9 +1,7 @@
 'use strict'
-// Number.MAX_SAFE_INTEGER
-var MAX_SAFE_INTEGER = 9007199254740991
 
 function checkUInt53 (n) {
-  if (n < 0 || n > MAX_SAFE_INTEGER || n % 1 !== 0) throw new RangeError('value out of range')
+  if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0) throw new RangeError('value out of range')
 }
 
 function encode (number, buffer, offset) {

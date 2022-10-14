@@ -1,6 +1,14 @@
 // Require our modules
 var SCC = require('./index.js');
 
+function verifyPubkeyWithCatch(strPubkey = "") {
+    try {
+        return SCC.wallet.verifyPubkey(strPubkey);
+    } catch (e) {
+        return e.message;
+    }
+}
+
 async function tests() {
     /* WALLET TESTS */
 
@@ -36,7 +44,34 @@ async function tests() {
     nStartTime = Date.now();
     const fSigVerif = await SCC.signer.verify('test', cWallet.pubkey, cSig);
     console.log('Verification:  ' + (fSigVerif ? 'Success!' : 'Failed!'));
-    console.log('Test 4 --- End (took ' + (Date.now() - nStartTime) + ' ms)');
+    console.log('Test 4 --- End (took ' + (Date.now() - nStartTime) + ' ms)\n\n');
+
+    // Address verification
+    console.log('Test 5 --- Verify the address of our test wallet');
+    nStartTime = Date.now();
+    console.log('Verify Address: ' + (verifyPubkeyWithCatch(cWallet.pubkey) ? 'Valid!' : 'Invalid!'));
+    console.log('Test 5 --- End (took ' + (Date.now() - nStartTime) + ' ms)\n\n');
+
+    // Address verification with regression / integrity testing
+    console.log('Test 6 --- verifyPubkey() regression & integrity testing');
+    nStartTime = Date.now();
+    const arrTestAddresses = [
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // VALID
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // VALID
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // VALID
+        "sAbmHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // BAD
+        "sBbmHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // BAD
+        "sY mHt8EP8YacjFGahjhqXT8GNeSiTjbRs",   // BAD
+        "sYbmHt",                               // BAD
+        "i55j",                                 // BAD
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbR!",   // BAD
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRiz",  // BAD
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRizz", // BAD
+        "sYbmHt8EP8YacjFGahjhqXT8GNeSiTjbRz"    // BAD
+    ];
+
+    arrTestAddresses.forEach(strAddr => console.log('Verify %s: %s', strAddr.padEnd(36), verifyPubkeyWithCatch(strAddr)));
+    console.log('Test 6 --- End (took ' + (Date.now() - nStartTime) + ' ms)\n\n');
 }
 
 tests();

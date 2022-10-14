@@ -69,7 +69,7 @@ var from_b58 = function (
 		j = 0,                             // reset the byte iterator
 			c = MAP.indexOf(S[i]);           // set the initial carry amount equal to the current base58 digit
 		if (c < 0)                         // see if the base58 digit lookup is invalid (-1)
-			return undefined;              // if invalid base58 digit, bail out and return undefined
+			return "";                     // if invalid base58 digit, bail out and return an empty string
 		c || b.length ^ i ? i : b.push(0); // prepend the result array with a zero if the base58 digit is zero and non-zero characters haven't been seen yet (to ensure correct decode length)
 		while (j in d || c) {              // start looping through the bytes until there are no more bytes and no carry amount
 			n = d[j];                      // set the placeholder for the current byte
