@@ -31,13 +31,13 @@ verifyPubkey = function (strPubkey = "") {
 
 // (network) Pubkey Derivation from Secp256k1 private key
 netPubFromSecpPub = function (secpPubkey) {
-	const pubHash = Crypto.createHash("sha256").update(secpPubkey).digest('hex');
-	const pubHashRMD160 = Crypto.createHash("ripemd160").update(util.hexStringToByte(pubHash)).digest('hex');
-	const pubHashNetwork = util.PUBKEY_ADDRESS.toString(16) + pubHashRMD160;
-	const pubHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHashNetwork)).digest('hex');
-	const pubHash3 = Crypto.createHash("sha256").update(util.hexStringToByte(pubHash2)).digest('hex').toUpperCase();
-	const chcksumPub = String(pubHash3).substring(0, 8).toUpperCase();
-	const pubPreBase = pubHashNetwork + chcksumPub;
+	const pubHash = Crypto.createHash("sha256").update(secpPubkey).digest();
+	const pubHashRMD160 = Crypto.createHash("ripemd160").update(pubHash).digest();
+	const pubHashNetwork = [util.PUBKEY_ADDRESS].concat(pubHashRMD160.toJSON().data);
+	const pubHash2 = Crypto.createHash("sha256").update(Buffer.from(pubHashNetwork)).digest();
+	const pubHash3 = Crypto.createHash("sha256").update(pubHash2).digest();
+	const chcksumPub = util.byteToHexString(pubHash3.subarray(0, 4)).toUpperCase();
+	const pubPreBase = util.byteToHexString(pubHashNetwork) + chcksumPub;
 	// Return the Network-Encoded pubkey (SCC address)
 	return util.to_b58(util.hexStringToByte(pubPreBase));
 }
@@ -59,8 +59,8 @@ generateWallet = async function () {
 	const randBytes = Crypto.randomBytes(32);
 	const privHex = util.byteToHexString(randBytes).toUpperCase();
 	const privWithVersion = util.SECRET_KEY.toString(16) + privHex + "01";
-	const privHash1 = Crypto.createHash("sha256").update(util.hexStringToByte(privWithVersion)).digest('hex');
-	const privHash2 = Crypto.createHash("sha256").update(util.hexStringToByte(privHash1)).digest('hex').toUpperCase();
+	const privHash1 = Crypto.createHash("sha256").update(util.hexStringToByte(privWithVersion)).digest();
+	const privHash2 = Crypto.createHash("sha256").update(privHash1).digest('hex').toUpperCase();
 	const chcksum = String(privHash2).substring(0, 8).toUpperCase();
 	const keyWithChcksum = privWithVersion + chcksum;
 	const privkeyBytes = util.hexStringToByte(keyWithChcksum);
