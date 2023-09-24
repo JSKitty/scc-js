@@ -21,7 +21,7 @@ import * as  SCC = from '@stakecubecoin/scc-js';
 
 ### Generate Wallet (Promise)
 
-Creates a cryptographically-random SCC wallet key pair (Private Key and Public Key)
+Creates a cryptographically-random SCC wallet key pair (Private Key and Public Key) takes an optional network `MainNet` or `TestNet` and defaults to `MainNet`
 
 ```js
 import * as  SCC = from '@stakecubecoin/scc-js';
@@ -32,7 +32,7 @@ async function newWallet() {
 }
 
 // Callback
-SCC.generateWallet().then(cWallet => {
+SCC.generateWallet('TestNet').then(cWallet => {
     // { 'pubkey': '...', 'privkey': '...' }
 });
 ```
