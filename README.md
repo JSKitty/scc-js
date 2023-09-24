@@ -1,4 +1,4 @@
-# SCC.js - An SCC implementation in pure Node.js
+# SCC.js - A JavaScript SCC implementation written in TypeScript.
 
 SCC.js can be used as an internal factory system to produce Transactions, On-Chain Scripts, Contracts and Signature creation/verification, all without any full node, RPC or cryptography necessary!
 
@@ -7,20 +7,24 @@ For example, [SCP Wallet](https://github.com/stakecube/StakeCubeProtocol) (an El
 # API Documentation
 
 The following docs assume that you've minimally imported the SCC.js library into your Node.js script, e.g:
+
 ```js
-const SCC = require('scc-js');
+import * as  SCC = from '@stakecubecoin/scc-js';
 // The SCC module exposes two sub-modules, the Wallet and Signer modules
 // SCC.wallet
 // SCC.signer
 ```
+
 ---
 
 ## Wallet (Key Store)
 
 ### Generate Wallet (Promise)
+
 Creates a cryptographically-random SCC wallet key pair (Private Key and Public Key)
+
 ```js
-const SCC = require('scc-js');
+import * as  SCC = from '@stakecubecoin/scc-js';
 
 // Async
 async function newWallet() {
@@ -34,12 +38,14 @@ SCC.generateWallet().then(cWallet => {
 ```
 
 ### Derive Public Key from Private Key
+
 Derives the public key from an existing WIF-encoded private key.
 
 - Decodes Base58 private keys by default, but can accept raw key bytes with an optional flag.
 - Returns a network-encoded, Base58 address by default, but can return a raw Secp256k1 public key with an optional flag.
+
 ```js
-const SCC = require('scc-js');
+import * as  SCC = from '@stakecubecoin/scc-js';
 
 // Derive a native base58 SCC address (String)
 //                                           Private Key String
@@ -65,9 +71,11 @@ const base58Address = SCC.wallet.pubFromPriv(uint8PrivKeyBytes,  true);
 ## Signer
 
 ### Create Signature (Promise)
+
 Creates a cryptographic signature of a given message, for a given private key.
+
 ```js
-const SCC = require('scc-js');
+import * as  SCC = from '@stakecubecoin/scc-js';
 
 // Async
 async function signMessage(msg, privkey)) {
@@ -81,9 +89,11 @@ SCC.signer.sign('hello world', 'WIF_private_key').then(cSig => {
 ```
 
 ### Verify Signature (Promise)
+
 Verify the integrity and authorship of a message by it's public key and signature.
+
 ```js
-const SCC = require('scc-js');
+import * as  SCC = from '@stakecubecoin/scc-js';
 
 // Async
 async function verifyMessage(msg, pubkey, cSig)) {
