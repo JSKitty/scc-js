@@ -156,6 +156,7 @@ function verify(
   address: string | Uint8Array,
   signature: string | Buffer,
   messagePrefix?: string | Buffer,
+  network: "MainNet" | "TestNet" = "MainNet",
 ) {
   if (!Buffer.isBuffer(signature)) signature = Buffer.from(signature, "base64");
 
@@ -169,7 +170,7 @@ function verify(
     parsed.compressed,
   );
 
-  return address === wallet.netPubFromSecpPub(publicKey);
+  return address === wallet.netPubFromSecpPub(publicKey, network);
 }
 
 export { magicHash, sign, verify };

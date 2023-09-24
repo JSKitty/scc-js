@@ -9,9 +9,12 @@ import * as scripts from "./script";
 const bitjs: any = {};
 
 /* public vars */
-bitjs.pub = util.PUBKEY_ADDRESS.toString(16);
-bitjs.script = util.SCRIPT_ADDRESS.toString(16);
-bitjs.priv = util.SECRET_KEY.toString(16);
+bitjs.pub = (network: "MainNet" | "TestNet" = "MainNet") =>
+  util.PUBKEY_ADDRESS[network].toString(16);
+bitjs.script = (network: "MainNet" | "TestNet" = "MainNet") =>
+  util.SCRIPT_ADDRESS[network].toString(16);
+bitjs.priv = (network: "MainNet" | "TestNet" = "MainNet") =>
+  util.SECRET_KEY[network].toString(16);
 bitjs.compressed = true;
 /**
  *

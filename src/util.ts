@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* chainparams */
-export const PUBKEY_ADDRESS = 125;
-export const SCRIPT_ADDRESS = 117;
-export const SECRET_KEY = 253;
+export const PUBKEY_ADDRESS = { MainNet: 125, TestNet: 140 };
+export const SCRIPT_ADDRESS = { MainNet: 117, TestNet: 19 };
+export const SECRET_KEY = { MainNet: 253, TestNet: 239 };
 
 // ByteToHexString Conversions
 
