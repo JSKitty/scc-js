@@ -1,6 +1,6 @@
 {
   "name": "@stakecubecoin/scc-js",
-  "version": "1.3.1",
+  "version": "2.0.0",
   "description": "A JavaScript implementation for SCC written in TypeScript",
   "source": "src/index.ts",
   "main": "lib/index.js",
