@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Node modules
 import crypto from "crypto";
-import secp256k1 from "@noble/secp256k1";
+import * as secp256k1 from "@noble/secp256k1";
 import * as util from "./util";
 import * as wallet from "./wallet";
 import * as scripts from "./script";
+import BigInteger from "big-integer";
 
 const bitjs: any = {};
 
@@ -60,7 +61,7 @@ export const transaction = function () {
     const pubkeyDecoded = Buffer.from(
       addrDecoded.slice(0, addrDecoded.length - 4).slice(1),
     );
-    o.value = BigInt(Math.floor(value * 1e8));
+    o.value = BigInteger(`${Math.floor(value * 1e8)}`);
     buf.push(scripts.OP.DUP);
     buf.push(scripts.OP.HASH160);
     buf.push(pubkeyDecoded.length);
@@ -78,7 +79,7 @@ export const transaction = function () {
    */
   btrx.addoutputburn = function (value: number, data: string) {
     const o: any = {};
-    o.value = BigInt(Math.floor(value * 1e8));
+    o.value = BigInteger(`${Math.floor(value * 1e8)}`);
     o.script = scripts.getScriptForBurn(data);
     return this.outputs.push(o);
   };

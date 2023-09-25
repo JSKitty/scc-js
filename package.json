@@ -1,6 +1,6 @@
 {
   "name": "@stakecubecoin/scc-js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A JavaScript implementation for SCC written in TypeScript",
   "source": "src/index.ts",
   "main": "lib/index.js",
@@ -57,7 +57,7 @@
   "homepage": "https://github.com/stakecube/scc-js#readme",
   "dependencies": {
     "@noble/secp256k1": "^1.5.5",
-    "big-integer": "^1.6.48"
+    "big-integer": "^1.6.51"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
