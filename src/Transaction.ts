@@ -5,14 +5,21 @@ import * as wallet from "./wallet";
 import * as scripts from "./script";
 import BigInteger from "big-integer";
 import * as secp256k1 from "@noble/secp256k1";
-import TransactionInput from "./interface/TransactionInput";
-import TransactionOutput from "./interface/TransactionOutput";
+import { TransactionInput as input } from "./interface/TransactionInput";
+import { TransactionOutput as output } from "./interface/TransactionOutput";
 
-export default class Transaction {
+export class Transaction {
+  /**
+   *
+   * @param version
+   * @param inputs
+   * @param outputs
+   * @param locktime
+   */
   constructor(
     public version: number = 2,
-    public inputs: TransactionInput[] = [],
-    public outputs: TransactionOutput[] = [],
+    public inputs: input[] = [],
+    public outputs: output[] = [],
     public locktime: number = 0,
   ) {}
 
@@ -30,7 +37,7 @@ export default class Transaction {
     script: string,
     sequence?: number,
   ) => {
-    const input: TransactionInput = {
+    const input: input = {
       outpoint: { hash: txid, index: index },
       script: Array.from(util.hexStringToByte(script)), // push previous output pubkey script
       sequence: sequence || (this.locktime == 0 ? 4294967295 : 0),
@@ -56,7 +63,7 @@ export default class Transaction {
     buf = buf.concat(Array.from(pubkeyDecoded)); // address in bytes
     buf.push(scripts.OP.EQUALVERIFY);
     buf.push(scripts.OP.CHECKSIG);
-    const output: TransactionOutput = {
+    const output: output = {
       value: BigInteger(`${Math.floor(value * 1e8)}`),
       script: buf,
     };
@@ -70,7 +77,7 @@ export default class Transaction {
    * @returns
    */
   addoutputburn = (value: number, data: string) => {
-    const output: TransactionOutput = {
+    const output: output = {
       value: BigInteger(`${Math.floor(value * 1e8)}`),
       script: scripts.getScriptForBurn(data),
     };
@@ -255,3 +262,14 @@ export default class Transaction {
     return util.byteToHexString(Uint8Array.from(buffer));
   };
 }
+
+export const transaction = (
+  version: number = 2,
+  inputs: input[] = [],
+  outputs: output[] = [],
+  locktime: number = 0,
+) => {
+  return new Transaction(version, inputs, outputs, locktime);
+};
+
+export { input, output };

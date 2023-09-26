@@ -1,6 +1,6 @@
 import { BigNumber } from "big-integer";
 
-export default interface TransactionOutput {
+export type TransactionOutput = {
   value: BigNumber;
   script: number[];
-}
+};

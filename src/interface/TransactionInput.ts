@@ -1,5 +1,5 @@
-export default interface TransactionInput {
+export type TransactionInput = {
   outpoint: { hash: string; index: number };
   script: number[];
   sequence: number;
-}
+};
