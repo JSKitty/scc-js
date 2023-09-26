@@ -3,7 +3,7 @@
 import crypto from "crypto";
 import * as secp256k1 from "@noble/secp256k1";
 import * as util from "./util";
-import * as tx from "./bitTrx";
+import Transaction from "./Transaction";
 
 const ERRS = (network: "MainNet" | "TestNet" = "MainNet") => {
   return {
@@ -136,4 +136,4 @@ export const generateWallet = async function (
     privkey: privkeyWIF,
   };
 };
-export { tx };
+export { Transaction as tx };

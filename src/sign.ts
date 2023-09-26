@@ -69,7 +69,7 @@ function magicHash(
   message: string | Buffer,
   messagePrefix: string | Buffer | undefined,
 ) {
-  messagePrefix = messagePrefix || "\x19DarkCoin Signed Message:\n";
+  messagePrefix = messagePrefix || "\x1EStakeCubeCoin Signed Message:\n";
   if (!Buffer.isBuffer(messagePrefix)) {
     messagePrefix = Buffer.from(messagePrefix, "utf8");
   }

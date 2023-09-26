@@ -1,3 +1,5 @@
+[![GitHub license](https://img.shields.io/github/license/stakecube/scc-js)](https://github.com/stakecube/scc-js/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/@stakecubecoin%2Fscc-js.svg)](https://www.npmjs.com/package/@stakecubecoin/scc-js) ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/stakecube/scc-js/develop) [![Node.js CI](https://github.com/stakecube/scc-js/actions/workflows/node.js.yml/badge.svg)](https://github.com/stakecube/scc-js/actions/workflows/node.js.yml)
+
 # SCC.js - A JavaScript SCC implementation written in TypeScript.
 
 SCC.js can be used as an internal factory system to produce Transactions, On-Chain Scripts, Contracts and Signature creation/verification, all without any full node, RPC or cryptography necessary!

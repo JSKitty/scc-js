@@ -28,7 +28,7 @@ export function byteToHexString(uint8arr: Uint8Array) {
  * @param str
  * @returns
  */
-export function hexStringToByte(str: string) {
+export function hexStringToByte(str: string | false) {
   if (!str) return new Uint8Array();
   const a: number[] = [];
   for (let i = 0, len = str.length; i < len; i += 2) {
